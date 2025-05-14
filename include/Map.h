@@ -8,7 +8,7 @@ class Map {
 public:
     Map(int width, int height, SDL_Texture* tileTexture);
     void GenerateTestMap();
-    void Render(SDL_Renderer* renderer);
+    void Render(SDL_Renderer* renderer,SDL_Rect camerOffset);
 
     bool IsWalkable(int x, int y) const;
 

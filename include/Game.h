@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <SDL_rect.h>
 #include <SDL_render.h>
 #include <memory>
 #include "Map.h"
@@ -18,6 +19,12 @@ public:
     bool IsRunning() const { return isRunning; }
     std::unique_ptr<Map> map;
 
+    static const int TILE_SIZE = 32;
+    static const int SCREEN_WIDTH = 640;
+    static const int SCREEN_HEIGHT = 480;
+    const int MAP_WIDTH_TILES = 40;
+    const int MAP_HEIGHT_TILES = 30;
+
 private:
     Game() = default;
 
@@ -27,4 +34,6 @@ private:
 
     Player* player = nullptr;
     InputHandler* inputHandler = nullptr;
+
+    SDL_Rect cameraOffset;
 };

@@ -5,7 +5,7 @@ class Entity {
 public:
     Entity(int x, int y) : x(x), y(y) {}
     virtual void Update() = 0;
-    virtual void Render(SDL_Renderer* renderer) = 0;
+    virtual void Render(SDL_Renderer* renderer, SDL_Rect camerOffset) = 0;
 
     void Move(int dx, int dy) { x += dx; y += dy; }
     int GetX() const { return x; }

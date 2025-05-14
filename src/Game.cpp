@@ -1,57 +1,78 @@
 #include "Game.h"
 #include "Map.h"
+#include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_timer.h>
+#include <iostream>
 #include <memory>
+#include <ostream>
 
-Game& Game::Instance() {
-    static Game instance;
-    return instance;
+Game &Game::Instance() {
+  static Game instance;
+  return instance;
 }
 
-void Game::Init(const char* title, int width, int height) {
-    SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+void Game::Init(const char *title, int width, int height) {
+  SDL_Init(SDL_INIT_VIDEO);
+  window =
+      SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                       SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Surface* surface = SDL_LoadBMP("../assets/tiles.bmp");
+  SDL_Surface *surface = SDL_LoadBMP("../assets/tiles.bmp");
 
-    SDL_Texture* tileTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
+  SDL_Texture *tileTexture = SDL_CreateTextureFromSurface(renderer, surface);
+  SDL_FreeSurface(surface);
 
-    map = std::make_unique<Map>(width,height,tileTexture);
-    map->GenerateTestMap();
+  map =
+      std::make_unique<Map>(width / TILE_SIZE, height / TILE_SIZE, tileTexture);
+  map->GenerateTestMap();
 
-    isRunning = true;
+  isRunning = true;
 
-    player = new Player(1, 1);
-    inputHandler = new InputHandler();
+  player = new Player(10, 7);
+  inputHandler = new InputHandler();
+
+  cameraOffset = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 }
 
 void Game::Run() {
-    while (isRunning) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) isRunning = false;
-        }
-
-        auto command = inputHandler->HandleInput();
-        if (command) {command->Execute(*player, map); SDL_Delay(1);}
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        map->Render(renderer);
-        player->Render(renderer);
-
-        SDL_RenderPresent(renderer);
+  while (isRunning) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT)
+        isRunning = false;
     }
+
+    auto command = inputHandler->HandleInput();
+    if (command) {
+      int oldX = player->GetX();
+      int oldY = player->GetY();
+      command->Execute(*player, map);
+      SDL_Delay(1);
+
+      if (player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2 < 0) cameraOffset.x = 0;
+      else if (player->GetX() + SCREEN_WIDTH / TILE_SIZE / 2 >MAP_WIDTH_TILES) {
+      } else cameraOffset.x = player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2;
+      if (player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2 < 0)cameraOffset.y = 0;
+      else if (player->GetY() + SCREEN_HEIGHT/TILE_SIZE/2 + 1 > MAP_HEIGHT_TILES){
+      }else  cameraOffset.y = player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2;
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    map->Render(renderer, cameraOffset);
+    player->Render(renderer, cameraOffset);
+
+    SDL_RenderPresent(renderer);
+  }
 }
 
 void Game::Clean() {
-    delete player;
-    delete inputHandler;
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+  delete player;
+  delete inputHandler;
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 }
