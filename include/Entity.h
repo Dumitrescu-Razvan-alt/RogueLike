@@ -10,6 +10,7 @@ public:
     void Move(int dx, int dy) { x += dx; y += dy; }
     int GetX() const { return x; }
     int GetY() const { return y; }
+    void SetPosition(int x, int y) const {x = x; y= y;}
 
 protected:
     int x, y;

@@ -1,5 +1,8 @@
 #pragma once
 #include <SDL2/SDL.h>
+#include <SDL_render.h>
+#include <memory>
+#include "Map.h"
 #include "Player.h"
 #include "InputHandler.h"
 
@@ -13,6 +16,7 @@ public:
 
     SDL_Renderer* GetRenderer() const { return renderer; }
     bool IsRunning() const { return isRunning; }
+    std::unique_ptr<Map> map;
 
 private:
     Game() = default;
