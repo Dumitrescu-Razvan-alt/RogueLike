@@ -2,6 +2,8 @@
 #include "Entity.h"
 #include "Map.h"
 #include <SDL2/SDL.h>
+#include <SDL_scancode.h>
+#include <array>
 #include <memory>
 
 class Command {
@@ -44,5 +46,9 @@ public:
 
 class InputHandler {
 public:
-  std::unique_ptr<Command> HandleInput(const SDL_Event &e);
+  InputHandler() { std::fill(prevKeystate.begin(), prevKeystate.end(), 0); }
+  std::unique_ptr<Command> HandleInput();
+
+private:
+  std::array<Uint8, SDL_NUM_SCANCODES> prevKeystate;
 };

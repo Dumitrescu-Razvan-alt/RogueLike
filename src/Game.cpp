@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Map.h"
 #include <SDL_render.h>
-#include <iostream>
+#include <SDL_timer.h>
 #include <memory>
 
 Game& Game::Instance() {
@@ -33,12 +33,10 @@ void Game::Run() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) isRunning = false;
-            auto command = inputHandler->HandleInput(event);
-            if (command) command->Execute(*player, map);
-
-
         }
 
+        auto command = inputHandler->HandleInput();
+        if (command) {command->Execute(*player, map); SDL_Delay(1);}
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
@@ -47,7 +45,6 @@ void Game::Run() {
         player->Render(renderer);
 
         SDL_RenderPresent(renderer);
-        SDL_Delay(100);
     }
 }
 
