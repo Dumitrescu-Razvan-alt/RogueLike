@@ -28,6 +28,10 @@ void Game::Init(const char *title, int width, int height) {
       std::make_unique<Map>(width / TILE_SIZE, height / TILE_SIZE, tileTexture);
   map->GenerateTestMap();
 
+  enemies.emplace_back(5, 6, std::make_unique<NormalMovement>(), *map, *player);
+  enemies.emplace_back(14, 10, std::make_unique<DiagonalMovement>(), *map,
+                       *player);
+
   isRunning = true;
 
   player = new Player(10, 7);
@@ -36,7 +40,23 @@ void Game::Init(const char *title, int width, int height) {
   cameraOffset = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 }
 
+void Game::UpdateCamera() {
+
+  if (player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2 < 0)
+    cameraOffset.x = 0;
+  else if (player->GetX() + SCREEN_WIDTH / TILE_SIZE / 2 > MAP_WIDTH_TILES) {
+  } else
+    cameraOffset.x = player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2;
+  if (player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2 < 0)
+    cameraOffset.y = 0;
+  else if (player->GetY() + SCREEN_HEIGHT / TILE_SIZE / 2 + 1 >
+           MAP_HEIGHT_TILES) {
+  } else
+    cameraOffset.y = player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2;
+}
+
 void Game::Run() {
+  int moves = 0;
   while (isRunning) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -46,33 +66,38 @@ void Game::Run() {
 
     auto command = inputHandler->HandleInput();
     if (command) {
-      int oldX = player->GetX();
-      int oldY = player->GetY();
-      command->Execute(*player, map);
-      SDL_Delay(1);
-
-      if (player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2 < 0) cameraOffset.x = 0;
-      else if (player->GetX() + SCREEN_WIDTH / TILE_SIZE / 2 >MAP_WIDTH_TILES) {
-      } else cameraOffset.x = player->GetX() - SCREEN_WIDTH / TILE_SIZE / 2;
-      if (player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2 < 0)cameraOffset.y = 0;
-      else if (player->GetY() + SCREEN_HEIGHT/TILE_SIZE/2 + 1 > MAP_HEIGHT_TILES){
-      }else  cameraOffset.y = player->GetY() - SCREEN_HEIGHT / TILE_SIZE / 2;
+      if (command->Execute(*player, *map))
+        moves++;
+      UpdateCamera();
+      SDL_Delay(100);
+      std::cout << moves << std::endl;
     }
+    if (moves == 2) {
+      for (auto &enemy : enemies) {
+        if (enemy.GetX() == player->GetX() && enemy.GetY() == player->GetY())
+          isRunning = false;
+        enemy.Update();
+      }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+        moves = 0;
+      }
 
-    map->Render(renderer, cameraOffset);
-    player->Render(renderer, cameraOffset);
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+      SDL_RenderClear(renderer);
 
-    SDL_RenderPresent(renderer);
+      map->Render(renderer, cameraOffset);
+      player->Render(renderer, cameraOffset);
+      for (auto &enemy : enemies)
+        enemy.Render(renderer, cameraOffset);
+
+      SDL_RenderPresent(renderer);
+    }
   }
-}
 
-void Game::Clean() {
-  delete player;
-  delete inputHandler;
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-}
+  void Game::Clean() {
+    delete player;
+    delete inputHandler;
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+  }

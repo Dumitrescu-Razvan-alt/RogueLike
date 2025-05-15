@@ -9,38 +9,94 @@
 class Command {
 public:
   virtual ~Command() {}
-  virtual void Execute(Entity &entity, std::unique_ptr<Map> &map) = 0;
+  virtual bool Execute(Entity &entity, Map &map) = 0;
 };
 
 class MoveUp : public Command {
 public:
-  void Execute(Entity &entity, std::unique_ptr<Map> &map) override {
-    if (map->IsWalkable(entity.GetX(), entity.GetY() - 1))
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX(), entity.GetY() - 1)) {
       entity.Move(0, -1);
+      return true;
+    }
+    return false;
   }
 };
 
 class MoveDown : public Command {
 public:
-  void Execute(Entity &entity, std::unique_ptr<Map> &map) override {
-    if (map->IsWalkable(entity.GetX(), entity.GetY() + 1))
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX(), entity.GetY() + 1)) {
       entity.Move(0, 1);
+      return true;
+    }
+    return false;
   }
 };
 
 class MoveLeft : public Command {
 public:
-  void Execute(Entity &entity, std::unique_ptr<Map> &map) override {
-    if (map->IsWalkable(entity.GetX() - 1, entity.GetY()))
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() - 1, entity.GetY())) {
       entity.Move(-1, 0);
+      return true;
+    }
+    return false;
   }
 };
 
 class MoveRight : public Command {
 public:
-  void Execute(Entity &entity, std::unique_ptr<Map> &map) override {
-    if (map->IsWalkable(entity.GetX() + 1, entity.GetY()))
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() + 1, entity.GetY())) {
       entity.Move(1, 0);
+      return true;
+    }
+    return false;
+  }
+};
+
+class MoveUpLeft : public Command {
+public:
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() - 1, entity.GetY() - 1)) {
+      entity.Move(-1, -1);
+      return true;
+    }
+    return false;
+  }
+};
+
+class MoveUpRight : public Command {
+public:
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() + 1, entity.GetY() - 1)) {
+      entity.Move(1, -1);
+      return true;
+    }
+    return false;
+  }
+};
+
+class MoveDownLeft : public Command {
+public:
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() - 1, entity.GetY() + 1)) {
+      entity.Move(-1, 1);
+      return true;
+    }
+    return false;
+  }
+};
+
+class MoveDownRight : public Command {
+public:
+  bool Execute(Entity &entity, Map &map) override {
+    if (map.IsWalkable(entity.GetX() + 1, entity.GetY() + 1)) {
+      entity.Move(1, 1);
+      return true;
+    }
+    return false;
   }
 };
 
