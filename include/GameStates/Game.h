@@ -3,7 +3,6 @@
 #include "InputHandler.h"
 #include "Map.h"
 #include "Player.h"
-#include "MovementStrategy.h"
 #include <SDL2/SDL.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>

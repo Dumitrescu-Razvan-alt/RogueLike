@@ -3,9 +3,7 @@
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_timer.h>
-#include <iostream>
 #include <memory>
-#include <ostream>
 
 Game &Game::Instance() {
   static Game instance;
@@ -70,12 +68,13 @@ void Game::Run() {
         moves++;
       UpdateCamera();
       SDL_Delay(100);
-      std::cout << moves << std::endl;
+    }
+    for (auto &enemy : enemies) {
+        if (enemy.GetX() == player->GetX() && enemy.GetY() == player->GetY())
+          isRunning = false;
     }
     if (moves == 2) {
       for (auto &enemy : enemies) {
-        if (enemy.GetX() == player->GetX() && enemy.GetY() == player->GetY())
-          isRunning = false;
         enemy.Update();
       }
 

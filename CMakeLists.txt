@@ -11,7 +11,11 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 # Include souece file headers
-include_directories(include)
+include_directories(include
+    include/Entities
+    include/GameStates
+    include/Map
+)
 
 # Source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
