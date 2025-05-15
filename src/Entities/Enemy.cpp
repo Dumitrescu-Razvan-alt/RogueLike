@@ -1,6 +1,5 @@
 // Enemy.cpp
 #include "Enemy.h"
-#include "Game.h"
 #include "Player.h"
 #include <SDL_render.h>
 

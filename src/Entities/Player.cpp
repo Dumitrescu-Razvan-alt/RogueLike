@@ -1,9 +1,14 @@
 #include "Player.h"
+#include <iostream>
 
 Player::Player(int x, int y) : Entity(x, y) {}
 
 void Player::Update() {
-  // No logic yet
+    moveCount++;
+    if(step < 2) step++;
+    else step = 0;
+    std::cout << " Updated";
+    Notify();
 }
 
 void Player::Render(SDL_Renderer *renderer, SDL_Rect camerOffset) {
