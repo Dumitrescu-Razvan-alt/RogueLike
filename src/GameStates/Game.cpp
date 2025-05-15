@@ -30,7 +30,6 @@ void Game::Init(const char *title, int width, int height) {
        std::cout << "TTF_Init failed: " << TTF_GetError() << std::endl;
    }
   font = TTF_OpenFont("../assets/font2.ttf",24);
-  if(!font )
   SDL_Surface *startImage = IMG_Load("../assets/start.png");
   SDL_Surface *endImage = IMG_Load("../assets/end.png");
   SDL_Surface *winImage = IMG_Load("../assets/win.png");
