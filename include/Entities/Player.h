@@ -11,5 +11,5 @@ public:
   int GetCurrentTurnStep() const {return step;}
 private:
     int moveCount = 0;
-    int step = 0;
+    int step = 1;
 };

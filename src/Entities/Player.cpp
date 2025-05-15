@@ -6,8 +6,7 @@ Player::Player(int x, int y) : Entity(x, y) {}
 void Player::Update() {
     moveCount++;
     if(step < 2) step++;
-    else step = 0;
-    std::cout << " Updated";
+    else step = 1;
     Notify();
 }
 

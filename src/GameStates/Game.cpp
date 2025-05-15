@@ -8,6 +8,7 @@
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_timer.h>
+#include <iostream>
 #include <memory>
 
 Game &Game::Instance() {
@@ -25,7 +26,11 @@ void Game::Init(const char *title, int width, int height) {
   SDL_Surface *surface = SDL_LoadBMP("../assets/tiles.bmp");
   IMG_Init(IMG_INIT_PNG);
   TTF_Init();
-  font = TTF_OpenFont("assets/font.ttf", 16);
+  if (TTF_Init() == -1) {
+       std::cout << "TTF_Init failed: " << TTF_GetError() << std::endl;
+   }
+  font = TTF_OpenFont("../assets/font2.ttf",24);
+  if(!font )
   SDL_Surface *startImage = IMG_Load("../assets/start.png");
   SDL_Surface *endImage = IMG_Load("../assets/end.png");
   SDL_Surface *winImage = IMG_Load("../assets/win.png");
@@ -147,6 +152,8 @@ void Game::ResetGame() {
   isRunning = true;
 
   player = new Player(10, 7);
+  moveUI = new MoveUI(player);
+  player->AddObserver(moveUI);
   inputHandler = new InputHandler();
 
   cameraOffset = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
