@@ -1,6 +1,7 @@
 #include "MovementStrategy.h"
 #include "InputHandler.h"
 #include <memory>
+
 std::unique_ptr<Command> NormalMovement::CalculateCommand(int &dx, int &dy) {
   int direction = rand() % 4;
   switch (direction) {

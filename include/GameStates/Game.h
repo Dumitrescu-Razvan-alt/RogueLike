@@ -50,6 +50,8 @@ public:
   static const int MAP_HEIGHT_TILES = 30;
   int moves = 0;
 
+  SDL_Texture *tileTexture = nullptr;
+  SDL_Texture *getTileTexture() const {return tileTexture;}
 private:
   Game() = default;
 

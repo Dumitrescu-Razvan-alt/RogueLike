@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "AStarMovementStrategy.h"
 #include "Map.h"
 #include "MoveUI.h"
 #include "SDL_surface.h"
@@ -27,9 +28,9 @@ void Game::Init(const char *title, int width, int height) {
   IMG_Init(IMG_INIT_PNG);
   TTF_Init();
   if (TTF_Init() == -1) {
-       std::cout << "TTF_Init failed: " << TTF_GetError() << std::endl;
-   }
-  font = TTF_OpenFont("../assets/font2.ttf",24);
+    std::cout << "TTF_Init failed: " << TTF_GetError() << std::endl;
+  }
+  font = TTF_OpenFont("../assets/font2.ttf", 24);
   SDL_Surface *startImage = IMG_Load("../assets/start.png");
   SDL_Surface *endImage = IMG_Load("../assets/end.png");
   SDL_Surface *winImage = IMG_Load("../assets/win.png");
@@ -38,23 +39,30 @@ void Game::Init(const char *title, int width, int height) {
   endTexture = SDL_CreateTextureFromSurface(renderer, endImage);
   winTexture = SDL_CreateTextureFromSurface(renderer, winImage);
 
-  SDL_Texture *tileTexture = SDL_CreateTextureFromSurface(renderer, surface);
+  tileTexture = SDL_CreateTextureFromSurface(renderer, surface);
   SDL_FreeSurface(surface);
   SDL_FreeSurface(startImage);
   SDL_FreeSurface(endImage);
   SDL_FreeSurface(winImage);
 
+  player = new Player(10, 7);
   map =
       std::make_unique<Map>(width / TILE_SIZE, height / TILE_SIZE, tileTexture);
   map->GenerateTestMap();
 
-  enemies.emplace_back(5, 6, std::make_unique<NormalMovement>(), *map, *player);
+  enemies.emplace_back(5, 6, std::make_unique<NormalMovement>(), *map, *player,
+                       tileTexture);
   enemies.emplace_back(14, 10, std::make_unique<DiagonalMovement>(), *map,
-                       *player);
+                       *player, tileTexture);
+  enemies.emplace_back(15, 16,
+                       std::make_unique<AStarDiagonalMovement>(*map, *player),
+                       *map, *player, tileTexture);
+  enemies.emplace_back(4, 7,
+                       std::make_unique<AStarCardinalMovement>(*map, *player),
+                       *map, *player, tileTexture);
 
   isRunning = true;
 
-  player = new Player(10, 7);
   moveUI = new MoveUI(player);
   player->AddObserver(moveUI);
   inputHandler = new InputHandler();
@@ -83,7 +91,7 @@ void Game::RenderEnemies() {
   for (auto &enemy : enemies)
     enemy.Render(renderer, cameraOffset);
 }
-void Game::RenderMoveUI(){moveUI->Render(renderer);}
+void Game::RenderMoveUI() { moveUI->Render(renderer); }
 
 //   void Game::Run() {
 //   int moves = 0;
@@ -144,13 +152,21 @@ void Game::ResetGame() {
 
   map->GenerateTestMap();
 
-  enemies.emplace_back(5, 6, std::make_unique<NormalMovement>(), *map, *player);
+  player = new Player(10, 7);
+
+  enemies.emplace_back(5, 6, std::make_unique<NormalMovement>(), *map, *player,
+                       tileTexture);
   enemies.emplace_back(14, 10, std::make_unique<DiagonalMovement>(), *map,
-                       *player);
+                       *player, tileTexture);
+  enemies.emplace_back(15, 16,
+                       std::make_unique<AStarDiagonalMovement>(*map, *player),
+                       *map, *player, tileTexture);
+  enemies.emplace_back(4, 7,
+                       std::make_unique<AStarCardinalMovement>(*map, *player),
+                       *map, *player, tileTexture);
 
   isRunning = true;
 
-  player = new Player(10, 7);
   moveUI = new MoveUI(player);
   player->AddObserver(moveUI);
   inputHandler = new InputHandler();

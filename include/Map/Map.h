@@ -11,9 +11,9 @@ public:
   void Render(SDL_Renderer *renderer, SDL_Rect camerOffset);
 
   bool IsWalkable(int x, int y) const;
+  SDL_Texture *tileTexture = nullptr;
 
 private:
   int width, height;
   std::vector<std::vector<std::shared_ptr<Tile>>> tiles;
-  SDL_Texture *tileTexture = nullptr;
 };

@@ -19,6 +19,7 @@ include_directories(
     include/Map
     include/Observer
     include/UI
+    include/Systems
 )
 
 link_directories(

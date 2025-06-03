@@ -1,5 +1,4 @@
 #include "Player.h"
-#include <iostream>
 
 Player::Player(int x, int y) : Entity(x, y) {}
 
